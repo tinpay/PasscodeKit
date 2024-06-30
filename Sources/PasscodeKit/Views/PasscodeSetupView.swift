@@ -48,97 +48,54 @@ public struct PasscodeSetupView: View {
                 inputView
                     .zIndex(0)
                     .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-                    .confirmationDialog(localizedBiometrics ?? "", isPresented: $showBiometrics, titleVisibility: localizedBiometrics != nil ? .visible : .hidden) {
-                        Button {
-                            self.task = Task { @MainActor in
-                                let context = LAContext()
-                                do {
-                                    let reason = "passcode.biometrics.reason".localized()
-                                    let success = try await context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
-                                    if success {
-                                        onCompletion(Passcode(code, type: type, allowBiometrics: true))
-                                    } else {
-                                        showBiometrics = true
-                                    }
-                                } catch {
-                                    showBiometrics = true
-                                }
-                            }
-                        } label: {
-                            Text(verbatim: "passcode.biometrics.setup.button".localized())
-                        }
-                        
-                        Button(role: .cancel) {
-                            onCompletion(Passcode(code, type: type, allowBiometrics: false))
-                        } label: {
-                            Text(verbatim: "passcode.biometrics.setup.cancel".localized())
-                        }
-                    } message: {
-                        if let localizedBiometrics {
-                            Text(verbatim: String(format: "passcode.biometrics.setup.message".localized(), localizedBiometrics))
-                        }
-                    }
-                    .animation(.default, value: currentStep)
-                    .navigationTitle("passcode.create.title".localized())
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button(role: .cancel) {
-                                dismiss()
-                            } label: {
-                                Text("cancel".localized())
-                            }
-                        }
-                    }
-
             case .reEnter:
                 reEnterInputView
                     .zIndex(1)
                     .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
-                    .confirmationDialog(localizedBiometrics ?? "", isPresented: $showBiometrics, titleVisibility: localizedBiometrics != nil ? .visible : .hidden) {
-                        Button {
-                            self.task = Task { @MainActor in
-                                let context = LAContext()
-                                do {
-                                    let reason = "passcode.biometrics.reason".localized()
-                                    let success = try await context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
-                                    if success {
-                                        onCompletion(Passcode(code, type: type, allowBiometrics: true))
-                                    } else {
-                                        showBiometrics = true
-                                    }
-                                } catch {
+            }
+            Text("")
+                .confirmationDialog(localizedBiometrics ?? "", isPresented: $showBiometrics, titleVisibility: localizedBiometrics != nil ? .visible : .hidden) {
+                    Button {
+                        self.task = Task { @MainActor in
+                            let context = LAContext()
+                            do {
+                                let reason = "passcode.biometrics.reason".localized()
+                                let success = try await context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
+                                if success {
+                                    onCompletion(Passcode(code, type: type, allowBiometrics: true))
+                                } else {
                                     showBiometrics = true
                                 }
+                            } catch {
+                                showBiometrics = true
                             }
-                        } label: {
-                            Text(verbatim: "passcode.biometrics.setup.button".localized())
                         }
-                        
+                    } label: {
+                        Text(verbatim: "passcode.biometrics.setup.button".localized())
+                    }
+                    
+                    Button(role: .cancel) {
+                        onCompletion(Passcode(code, type: type, allowBiometrics: false))
+                    } label: {
+                        Text(verbatim: "passcode.biometrics.setup.cancel".localized())
+                    }
+                } message: {
+                    if let localizedBiometrics {
+                        Text(verbatim: String(format: "passcode.biometrics.setup.message".localized(), localizedBiometrics))
+                    }
+                }
+                .animation(.default, value: currentStep)
+                .navigationTitle("passcode.create.title".localized())
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
                         Button(role: .cancel) {
-                            onCompletion(Passcode(code, type: type, allowBiometrics: false))
+                            dismiss()
                         } label: {
-                            Text(verbatim: "passcode.biometrics.setup.cancel".localized())
-                        }
-                    } message: {
-                        if let localizedBiometrics {
-                            Text(verbatim: String(format: "passcode.biometrics.setup.message".localized(), localizedBiometrics))
+                            Text("cancel".localized())
                         }
                     }
-                    .animation(.default, value: currentStep)
-                    .navigationTitle("passcode.create.title".localized())
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button(role: .cancel) {
-                                dismiss()
-                            } label: {
-                                Text("cancel".localized())
-                            }
-                        }
-                    }
-
-            }
+                }
         }
     }
     
