@@ -53,7 +53,8 @@ public struct PasscodeSetupView: View {
                     .zIndex(1)
                     .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
             }
-            Text("")
+            Color.clear
+                .frame(width: 1, height: 1)
                 .confirmationDialog(localizedBiometrics ?? "", isPresented: $showBiometrics, titleVisibility: localizedBiometrics != nil ? .visible : .hidden) {
                     Button {
                         self.task = Task { @MainActor in
